@@ -2,7 +2,7 @@
 
 This page documents a series of oscilloscope measurements made in November 2026 on the
 Servo-2, Servo-3 and Servo-6 decoder boards. The immediate reason was that the Servo-3
-board reset while a servo was moving. The measurements that follow identify the
+board sometimes reset while an Uhlenbrock servo was moving. The measurements that follow identify the
 conditions under which that happens, what fixes it, and which questions remain open.
 
 The scope images referenced below are in
