@@ -63,6 +63,7 @@ Servo-6 board:
 
 ### External links ####
 - Schematics and PCB of the servo-2 board: https://oshwlab.com/aikopras/support-lift-controller_copy_copy_copy_copy (sorry for this strange URL)
+- About the [power supply and servo current](extras/PowerSupply.md) of the boards.
 - Programmer Decoder-POM (reading and writing all CVs, including the servo end positions): https://github.com/aikopras/Programmer-Decoder-POM
 - Servo-TCA library: https://github.com/aikopras/Servo-TCA
 - AP_DCC_Decoder_Core library: https://github.com/aikopras/AP_DCC_Decoder_Core
