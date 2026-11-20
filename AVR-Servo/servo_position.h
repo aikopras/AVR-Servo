@@ -51,10 +51,9 @@
 
 class ServoPosition {
   public:
-    ServoPosition();                            // constructor
-
+    void init();                                // Should be called MyServo::init 
     void saveServoPosition(uint8_t number, uint8_t value); // should be called after a change
-    uint16_t servoPositions[NUMBER_OF_SERVOS];  // Where are the various servo positions stored in EEPROM?
+    uint16_t servoPositions[MAX_NUMBER_OF_SERVOS];  // Where are the various servo positions stored in EEPROM?
     
     void clearEEPROMCircularBufferValues();     // Can be called if the EEPROM gets (re)initialised
     void printEEPROM();                         // Only for testing

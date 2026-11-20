@@ -4,21 +4,21 @@
 // Author:    Aiko Pras
 // History:   2025/03/22 
 //            2025/06/01 ap: first production version 
+//            2026/11/17 ap: PulseStartUpDelay renamed into PowerStartUpDelay, comments corrected
+//            2026/11/18 ap: comments for the servo-2 board (InvertRelais, curves), PowerWhenIdle
 // 
 // As opposed to some of my earlier decoders, the servo decoder needs more CVs to allow the user
 // to change several aspects of the servo's behavior. Therefore the CV space is divided into two parts:
 // 1) CV 1..63, which are the "standard" CVs that are declared by AP_DCC_Decoder_Core
-// 2) CV 65.. for the servo specific CVs. 16 bytes per servo.
+// 2) CV 65.. for the servo specific CVs. 18 bytes per servo.
 // See hardware.h for details. That file also includes the defines that tell where the servo specific
 // CVs start in EEPROM.  
 //
-// Invert
-// =======
-// The Invert CV has consists of several parts:
-// - Bit 0: 1 = Switch position (straight/curved) should be inverted
-// - Bit 1: 1 = Relais position should be inverted
-//          As default, the relais is inactive for a straight direction
-// - Bit 2: 1: The servo power enable pin is activated if LOW (normal case is HIGH)     
+// InvertServoDir / InvertRelais
+// =============================
+// - InvertServoDir: 0 = normal. Any other value: the switch position (straight/curved) is inverted
+// - InvertRelais: 1 = relais position should be inverted. As default, the relais is inactive for a
+//   straight direction. Only used on the servo-2 board; the servo-3 and servo-6 boards have no relais.
 //
 // CurveA
 // ======
@@ -30,7 +30,8 @@
 //        0 = curve is stored in PROGMEM, 1 = curve is stored in EEPROM
 //        PROGMEM curves are predefined and cannot be changed by the user
 //        EEPROM curves are user-defined. To define a new curve, the user should enter values in the 
-//        CVs starting from 193 (or 129, in case the microcontroller has only 256 bytes of EEPROM).
+//        CVs starting from START_INDEX_SERVO_CURVES (see hardware.h): 101 for the servo-2 board,
+//        119 for the servo-3 board, 173 for the servo-6 board.
 //        See "Coding of curves" below for details. 
 // Bits 5..0: index that points to the desired curve
 //        The indexes for all PROGMEM curves are defined in the "Servo-TCA" library, 
@@ -54,15 +55,22 @@
 // ServoType
 // =========
 // - 0: Generic servo. Uses values from CVs 10..17
+//   ServoType 1..4 use fixed values instead. Whether the power stays on between movements (PowerWhenIdle)
+//   is then fixed per board and type: see POWER_WHEN_IDLE in hardware.h
 // - 1: Uhlenbrck standard-Servo (81420) / Weiner Mein Antrieb
 // - 2: MBTronic
 // - 3: SG90 - Tower Pro
 // - 4: SG90 - TZT
 //
-// PulseStartUpValue / PulseStartUpDelay
+// PulseStartUpValue / PowerStartUpDelay
 // =====================================
+// After reboot the pulse signal is set to the level given by PulseStartUpValue (0 = low, 1 = high).
+// After the delay given by PowerStartUpDelay, the servo power is switched on (if PowerWhenIdle = 1).
+// Since the servos are initialised one after the other, the servo power is also switched on one after
+// the other. This avoids that all servos draw their start-up current at the same moment (see OpenDCC,
+// method 6).
 // For most servos that were tested, the PulseStartUpValue should be HIGH.
-// A reasonable value for the PulseStartUpDelay would be 25 (500ms)
+// The default value for the PowerStartUpDelay is 5 (100ms). ServoType 1..4 use a fixed delay of 10 (200ms).
 //
 // IdlePulseDefault
 // ================
@@ -104,7 +112,7 @@ const uint8_t InvertServoDir      =  7;  // Invert servo direction
 const uint8_t InvertRelais        =  8;  // Invert polarisation relais
 const uint8_t ServoType           =  9;  // 0 = use the Pulse and Power CVs below, 1 = ...
 const uint8_t PulseStartUpValue   = 10;  // Pulse signal during startup. 0 = low, 1 = high
-const uint8_t PulseStartUpDelay   = 11;  // Duration of the startup pulse. In 20 ms ticks.
+const uint8_t PowerStartUpDelay   = 11;  // Delay after reboot before the servo power is on. In 20 ms ticks.
 const uint8_t IdlePulseDefault    = 12;  // Pulse signal between moves (low, high or continuous pulse)
 const uint8_t PulseOnBefore       = 13;  // Number of pulses before the servo starts moving
 const uint8_t PulseOffAfter       = 14;  // Number of pulses after the servo has moved

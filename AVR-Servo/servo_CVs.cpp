@@ -4,6 +4,8 @@
 // Author:    Aiko Pras
 // History:   2025/03/22 
 //            2025/06/01 ap: first production version 
+//            2026/11/17 ap: PowerWhenIdle default 1, PowerStartUpDelay (was PulseStartUpDelay) default 5
+//            2026/11/20 ap: PowerWhenIdle default depends on the board (POWER_WHEN_IDLE, see hardware.h)
 // 
 // Read, write and initialise the servo specific CVs.
 //
@@ -22,7 +24,7 @@ uint8_t ReadServoCV(uint8_t servo, uint8_t CV) {
 
 void WriteServoCV(uint8_t servo, uint8_t CV, uint8_t value) {
   uint16_t CvIndex = START_INDEX_SERVO_CVS + (servo * NUMBER_OF_SERVO_CVS) + CV;
-  if (servo < NUMBER_OF_SERVOS) EEPROM.update(CvIndex, value); 
+  if (servo < MAX_NUMBER_OF_SERVOS) EEPROM.update(CvIndex, value); 
 };
 
 
@@ -69,7 +71,7 @@ void WriteServoMax(uint8_t servo, uint16_t value) {
 // InvertRelais        =  8;  // Invert polarisation relais
 // ServoType           =  9;  // 0 = use the Pulse and Power CVs below, 1 = ...
 // PulseStartUpValue   = 10;  // Pulse signal during startup. 0 = low, 1 = high
-// PulseStartUpDelay   = 11;  // Duration of the startup pulse. In 20 ms ticks.
+// PowerStartUpDelay   = 11;  // Delay after reboot before the servo power is on. In 20 ms ticks.
 // IdlePulseDefault    = 12;  // Pulse signal between moves (low, high or continuous pulse)
 // PulseOnBefore       = 13;  // Number of pulses before the servo starts moving
 // PulseOffAfter       = 14;  // Number of pulses after the servo has moved
@@ -81,9 +83,9 @@ void WriteServoMax(uint8_t servo, uint16_t value) {
 //******************************************************************************************************
 void CreateDefaultServoValuesInEEPROM() {
   // Step 1: Store the number of servos in the CV proeceeding the first servo CVs
-  cvValues.write((START_INDEX_SERVO_CVS - 1), NUMBER_OF_SERVOS);
+  cvValues.write(EEPROM_MAX_SERVOS_INDEX, MAX_NUMBER_OF_SERVOS);
   // Step 2: Set the CV values for upto 8 servos
-  for (uint8_t i = 0; i < NUMBER_OF_SERVOS; i++) {
+  for (uint8_t i = 0; i < MAX_NUMBER_OF_SERVOS; i++) {
     WriteServoMin(i, 1300);                         // in us 
     WriteServoMax(i, 1700);                         // in us
     WriteServoCV(i, CurveA, 2);                     // Smooth move for switches (250ms)
@@ -94,11 +96,11 @@ void CreateDefaultServoValuesInEEPROM() {
     WriteServoCV(i, InvertRelais, 0);               // polarisation relais: not inverted
     WriteServoCV(i, ServoType, 0);                  // use the CVs below
     WriteServoCV(i, PulseStartUpValue, 1);          // After reboot, the pulse signal is High 
-    WriteServoCV(i, PulseStartUpDelay, 25);         // After reboot, we delay by this value
-    WriteServoCV(i, IdlePulseDefault, 1);           // High pulse signal betwen between moves
+    WriteServoCV(i, PowerStartUpDelay, 5);          // After reboot, the servo power is on after 100 ms
+    WriteServoCV(i, IdlePulseDefault, 1);           // High pulse signal between moves
     WriteServoCV(i, PulseOnBefore, 0);              // 0 ms
     WriteServoCV(i, PulseOffAfter, 10);             // 200 ms
-    WriteServoCV(i, PowerWhenIdle, 0);              // power enable signal will be low between moves
+    WriteServoCV(i, PowerWhenIdle, POWER_WHEN_IDLE); // board dependent (see hardware.h)
     WriteServoCV(i, PowerOnBefore, 0);              // 0 ms
     WriteServoCV(i, PowerOffAfter, 10);             // 200 ms
   };

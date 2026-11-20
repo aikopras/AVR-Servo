@@ -4,8 +4,10 @@
 // Author:    Aiko Pras
 // History:   2025/02/22 
 //            2025/06/01 ap: first production version 
+//            2026/11/17 ap: adapted to Servo-TCA 2.0.0 (ServoMoba6), moveServo() added
+//            2026/11/18 ap: setRelay() for the polarisation relays (servo-2 board)
 // 
-// Extends the ServoMoba class with some extra functionality that we need for this decoder
+// Extends the ServoMoba6 class with some extra functionality that we need for this decoder
 // A maximum of 6 servo objects can be instantiated
 //
 // CurveA and CurveB
@@ -18,7 +20,7 @@
 // PreviousCurve
 // =============
 // As part of init(), also the last used curve (including the MSB = direction) is read from the
-// circular buffer (that is maintained at the end of the servo space), and stored in: previousCurve.
+// circular buffer (that is maintained at the end of the EEPROM space), and stored in: previousCurve.
 // This data in previousCurve is needed to load the last used servo curve. In init(), this curve is 
 // used to determine the initial servo position (in microseconds) that must be written to the servo 
 // (writeMicroseconds) before we attach the servo. 
@@ -31,6 +33,14 @@
 // If these are unequal, then the new curve must be loaded that belongs to the desired switch position.
 // Loading this new curve can be accomplished by loadCurve().
 // To subsequently move the servo, moveServoAlongCurve should be called.
+//
+// Polarisation relays
+// ===================
+// Only the servo-2 board has polarisation relays (RELAYS0_PIN and RELAYS1_PIN in hardware.h). 
+// set() does not switch the relay. After set(), the main program should call setRelay(), which sets
+// the relay to the current position. During configuration (handheld or PoM) setRelay() is not called,
+// since the servo returns to its start position after configuration. On boards without relays,
+// setRelay() does nothing.
 // 
 // Meaning of the bits within a curve byte
 // =======================================
@@ -46,40 +56,41 @@
 //******************************************************************************************************
 #pragma once
 #include <Arduino.h>
-#include <Servo_TCA0_MoBa.h>                // Inherits and extends the ServoMoba class
+#include <Servo_TCA_MoBa.h>                 // Inherits and extends the ServoMoba6 class
 
 
-class MyServo: public ServoMoba {
+class MyServo: public ServoMoba6 {
 
   public:
-    void init(uint8_t servoNumber);         // In theory 0..7, in practice 0..1 
-    void set( uint8_t servoPosition);       // 0 = diverging (red, -),  1 = straight (green, +)
+    void init(uint8_t servoNumber);         // In theory 0..7 
+    void set(uint8_t servoPosition);        // 0 = diverging (red, -),  1 = straight (green, +)
     void invertServoDirection();            // invert the servo direction by changing curvo0 and curve1
     void loadCurve(uint8_t curve);          // load a new curve from either EEPROM or PROGMEM
+    void moveServo();                       // move to the other position, without saving it (configuration)
+    void setRelay();                        // set the polarisation relay (if any) to the current position
 
     bool getPosition();                     // 0 = diverging track, red, - / 1 = straight track, green, + 
 
-    void configPulseSignal(                 // Configure all variables related to the pulse signal
-      uint16_t initWidth);                  // using the related CV values 
+    void configPulseSignal(                 // Configure all variables ted to the pulse signal
+    uint16_t initWidth);                    // using the relaited CV values 
     void configPowerSignal();               // Set the idle power values from CVs
 
     uint8_t timeMultiplier;                 // 1..255 (20ms steps). Slows down servo movement
-    bool invertPolarisationRelay;           // invert the relais from + is OFF to + is ON 
 
+    uint8_t curve0;                         // The curve we should use for switch position 0 (red)
+    uint8_t curve1;                         // The curve we should use for switch position 1 (green)
   
   private:
     void attachMyServo();                   // Attaches the servo, if the corresponding PIN is defined
     void copyCurveCVs();                    // Copies the CVs for the Curves into curvo0 and curve1
-    void setPolarisationRelay(bool pos);    // Sets the relay for the frog polarisation
     void pulseAfterReboot(                  // Aftrer reboot, set the pulse signal to a high or low level
-      uint8_t level,                        // 0 = LOW (0V), 1 = HIGH (3,3 or 5V)
-      uint8_t waitTime);                    // waitTime is in 20ms ticks
-    void initPolarisationRelay();           // Sets the pin(s) for the frog polarisation relays as output
+    uint8_t level,                          // 0 = LOW (0V), 1 = HIGH (3,3 or 5V)
+    uint8_t waitTime);                      // waitTime is in 20ms ticks
+    void initPolarisationRelay();           // Sets the pin for the polarisation relay (if any) as output
     void printInfoIni();                    // for debugging
     void printInfoSet();                    // for debugging
 
-    uint8_t servoNumber;                    // In theory 0..7, in practice for this specific board 0..1
-    uint8_t curve0;                         // The curve we should use for switch position 0 (red)
-    uint8_t curve1;                         // The curve we should use for switch position 1 (green)
+    uint8_t servoNumber;                    // In principle 0..7, in practice 0..5
     bool servoDirectionInverted;            // The servo direction was changed by invertServoDirection()
+    bool invertPolarisationRelay;           // invert the relais from + is OFF to + is ON (InvertRelais CV)
 };
