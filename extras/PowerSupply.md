@@ -74,17 +74,17 @@ It happens with both switch types and it is intermittent.
 
 With the switch bypassed the rail never misbehaves:
 
-![No switch](Scope%20measurements%20power/2026-11-10-servo3-no-switch-clean.png)
+![No switch](Scope%20easurements%20power%20supply/2026-11-10-servo3-no-switch-clean.png)
 
 With a switch fitted it collapses:
 
-![LPW5209](Scope%20measurements%20power/2026-11-10-servo3-lpw5209-collapse.png)
-![MT9700](Scope%20measurements%20power/2026-11-10-servo3-mt9700-collapse.png)
+![LPW5209](Scope%20easurements%20power%20supply/2026-11-10-servo3-lpw5209-collapse.png)
+![MT9700](Scope%20easurements%20power%20supply/2026-11-10-servo3-mt9700-collapse.png)
 
 The same output, the same servo and the same command is sometimes clean, which shows
 this is a threshold that is only just crossed rather than a permanent property:
 
-![Clean run](Scope%20measurements%20power/2026-11-10-servo3-lpw5209-clean-run.png)
+![Clean run](Scope%20easurements%20power%20supply/2026-11-10-servo3-lpw5209-clean-run.png)
 
 ## 2. The 5 V rail is a symptom — the input rail collapses first
 
@@ -97,12 +97,12 @@ input falls below the 3.5 V UVLO threshold.
 | output 3, no reset | 19.14 V | 11.42 V | survives |
 | output 1 (no switch), vigorous movement | 19.29 V | 11.73 V | survives |
 
-![VIN collapse](Scope%20measurements%20power/2026-11-10-servo3-vin-collapse-reset.png)
-![VIN survives](Scope%20measurements%20power/2026-11-10-servo3-vin-dip-no-reset.png)
+![VIN collapse](Scope%20easurements%20power%20supply/2026-11-10-servo3-vin-collapse-reset.png)
+![VIN survives](Scope%20easurements%20power%20supply/2026-11-10-servo3-vin-dip-no-reset.png)
 
 The 100 Hz ripple on the input confirms the 50 Hz transformer source:
 
-![100 Hz ripple](Scope%20measurements%20power/2026-11-10-servo3-vin-100hz-ripple.png)
+![100 Hz ripple](Scope%20easurements%20power%20supply/2026-11-10-servo3-vin-100hz-ripple.png)
 
 ## 3. The supply itself has margin
 
@@ -113,14 +113,14 @@ Measured either side of the 5 Ω series resistance while a servo moves on output
 | before the resistor | 19.71 V | 17.20 V |
 | after the resistor | 19.32 V | 16.88 V |
 
-![Before](Scope%20measurements%20power/2026-11-10-servo3-input-before-5ohm.png)
-![After](Scope%20measurements%20power/2026-11-10-servo3-input-after-5ohm.png)
+![Before](Scope%20easurements%20power%20supply/2026-11-10-servo3-input-before-5ohm.png)
+![After](Scope%20easurements%20power%20supply/2026-11-10-servo3-input-after-5ohm.png)
 
 The difference is only 0.33–0.39 V, which at 5 Ω is roughly 70–80 mA of input current,
 about 1.5 W. Even with the servo moving vigorously, V_IN never drops below 11.73 V and
 the processor never resets:
 
-![Vigorous](Scope%20measurements%20power/2026-11-10-servo3-vin-vigorous-no-switch.png)
+![Vigorous](Scope%20easurements%20power%20supply/2026-11-10-servo3-vin-vigorous-no-switch.png)
 
 The supply is therefore not undersized for this load.
 
@@ -134,8 +134,8 @@ output with the same servo is clean:
 | without external board | 1.07 V | 4.62 V |
 | with external board | 0.29 V | 4.84 V |
 
-![Fix, no external board](Scope%20measurements%20power/2026-11-10-servo3-fix-powerwhenidle-no-extboard.png)
-![Fix, with external board](Scope%20measurements%20power/2026-11-10-servo3-fix-powerwhenidle-with-extboard.png)
+![Fix, no external board](Scope%20easurements%20power%20supply/2026-11-10-servo3-fix-powerwhenidle-no-extboard.png)
+![Fix, with external board](Scope%20easurements%20power%20supply/2026-11-10-servo3-fix-powerwhenidle-with-extboard.png)
 
 A second, independent trigger remains: when the current limit actually engages — which
 can be provoked by holding the servo by hand — the processor resets as well. Raising the
@@ -151,9 +151,9 @@ Servo-3 board, MT9700, Weinert/Uhlenbrock servo, `PowerWhenIdle = 1`:
 | servo rail, overview (10 ms/div) | 5.36 V | 4.70 V |
 | processor 5 V | 5.32 V | 4.76 V |
 
-![Servo rail detail](Scope%20measurements%20power/2026-11-17-servo3-servo-rail-detail.png)
-![Servo rail overview](Scope%20measurements%20power/2026-11-17-servo3-servo-rail-overview.png)
-![Processor rail](Scope%20measurements%20power/2026-11-17-servo3-processor-rail.png)
+![Servo rail detail](Scope%20easurements%20power%20supply/2026-11-17-servo3-servo-rail-detail.png)
+![Servo rail overview](Scope%20easurements%20power%20supply/2026-11-17-servo3-servo-rail-overview.png)
+![Processor rail](Scope%20easurements%20power%20supply/2026-11-17-servo3-processor-rail.png)
 
 The disturbance is pulse-synchronous: one event per 20 ms servo frame, starting at the
 **falling** edge of the control pulse, which is where the servo drives its motor. This
@@ -173,11 +173,11 @@ Same servos, servo power switched around each movement, no external board.
 | Servo-6 | Uhlenbrock | 5.28 V | 4.73 V |
 | Servo-2 | Uhlenbrock | 5.51 V | 4.44 V |
 
-![Servo-3 SG90](Scope%20measurements%20power/2026-11-20-servo3-sg90-5v.png)
-![Servo-3 Uhlenbrock](Scope%20measurements%20power/2026-11-20-servo3-uhlenbrock-5v.png)
-![Servo-6 SG90](Scope%20measurements%20power/2026-11-20-servo6-sg90-5v.png)
-![Servo-6 Uhlenbrock](Scope%20measurements%20power/2026-11-20-servo6-uhlenbrock-5v.png)
-![Servo-2 Uhlenbrock](Scope%20measurements%20power/2026-11-20-servo2-uhlenbrock-5v.png)
+![Servo-3 SG90](Scope%20easurements%20power%20supply/2026-11-20-servo3-sg90-5v.png)
+![Servo-3 Uhlenbrock](Scope%20easurements%20power%20supply/2026-11-20-servo3-uhlenbrock-5v.png)
+![Servo-6 SG90](Scope%20easurements%20power%20supply/2026-11-20-servo6-sg90-5v.png)
+![Servo-6 Uhlenbrock](Scope%20easurements%20power%20supply/2026-11-20-servo6-uhlenbrock-5v.png)
+![Servo-2 Uhlenbrock](Scope%20easurements%20power%20supply/2026-11-20-servo2-uhlenbrock-5v.png)
 
 Two observations.
 
@@ -210,9 +210,9 @@ are single samples and are not used here.
 | TowerPro | ≈ 0 A | ≈ 0.43 A | discrete bursts, long quiet intervals |
 | MBTronic | ≈ 0 A | ≈ 0.41 A | discrete bursts |
 
-![Uhlenbrock current](Scope%20measurements%20power/2026-11-20-current-uhlenbrock.png)
-![TowerPro current](Scope%20measurements%20power/2026-11-20-current-towerpro.png)
-![MBTronic current](Scope%20measurements%20power/2026-11-20-current-mbtronic.png)
+![Uhlenbrock current](Scope%20easurements%20power%20supply/2026-11-20-current-uhlenbrock.png)
+![TowerPro current](Scope%20easurements%20power%20supply/2026-11-20-current-towerpro.png)
+![MBTronic current](Scope%20easurements%20power%20supply/2026-11-20-current-mbtronic.png)
 
 This explains why the Uhlenbrock servo stands out. It is not a heavier servo — Uhlenbrock
 specifies 13 Ncm, less than an SG90 — and its peak current is not higher than the others.
