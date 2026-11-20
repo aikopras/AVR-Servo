@@ -6,7 +6,7 @@ board reset while a servo was moving. The measurements that follow identify the
 conditions under which that happens, what fixes it, and which questions remain open.
 
 The scope images referenced below are in
-[Scope measurements power supply](Scope%20measurements%20power%20supply).
+[Scope measurements power supply](Scope%20easurements%20power%20supply).
 
 ---
 
